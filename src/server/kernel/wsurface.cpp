@@ -14,6 +14,8 @@
 #include <qwtexture.h>
 #include <qwbuffer.h>
 #include <QDebug>
+#include <QFile>
+#include <QRegularExpression>
 
 extern "C" {
 #define static
@@ -386,6 +388,26 @@ QList<WSurface*> WSurface::subsurfaces() const
     }
 
     return subsurfaeList;
+}
+
+QString WSurface::clientName() const
+{
+    W_DC(WSurface);
+    wl_client *client = d->waylandClient();
+    pid_t pid;
+    uid_t uid;
+    gid_t gid;
+    wl_client_get_credentials(client, &pid, &uid, &gid);
+
+    QString programName;
+    QFile file(QString("/proc/%1/status").arg(pid));
+    if (file.open(QFile::ReadOnly)) {
+        programName = QString(file.readLine()).section(QRegularExpression("([\\t ]*:[\\t ]*|\\n)"),1,1);
+        file.close();
+    }
+
+    qDebug() << "Program name for PID" << pid << "is" << programName;
+    return programName;
 }
 
 void WSurface::map()

@@ -175,6 +175,15 @@ Item {
                 if (pendingDestroy)
                     return
 
+                console.log("onMappedChanged!", waylandSurface.surface.clientName)
+
+
+                if (waylandSurface.surface.clientName === "dLauncher") {
+                    console.log("!!!!!!!!!!!!!!!!!2333")
+                    z = 3
+                    anchors.centerIn = parent
+                }
+
                 // When Socket is enabled and mapped becomes false, set visible
                 // after hideAnimation complete， Otherwise set visible directly.
                 if (mapped) {

@@ -34,6 +34,8 @@ class WAYLIB_SERVER_EXPORT WSurface : public QObject, public WObject
     Q_PROPERTY(bool hasSubsurface READ hasSubsurface NOTIFY hasSubsurfaceChanged)
     Q_PROPERTY(QList<WSurface*> subsurfaces READ subsurfaces NOTIFY newSubsurface)
     Q_PROPERTY(WOutput* primaryOutput READ primaryOutput NOTIFY primaryOutputChanged)
+    Q_PROPERTY(QString clientName READ clientName)
+
     QML_NAMED_ELEMENT(WaylandSurface)
     QML_UNCREATABLE("Only create in C++")
 
@@ -60,6 +62,7 @@ public:
     bool isSubsurface() const;
     bool hasSubsurface() const;
     QList<WSurface*> subsurfaces() const;
+    QString clientName() const;
 
 public Q_SLOTS:
     void enterOutput(WOutput *output);
