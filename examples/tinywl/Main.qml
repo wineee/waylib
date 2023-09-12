@@ -127,6 +127,12 @@ Item {
                         decorationManager.mode = XdgDecorationManager.PreferServerSide
                     }
                 }
+                TabButton {
+                    text: qsTr("Full Layout")
+                    onClicked: {
+                        decorationManager.mode = XdgDecorationManager.PreferServerSide
+                    }
+                }
             }
 
             Item {
@@ -141,6 +147,12 @@ Item {
 
                 XdgTiledWorkspace {
                     visible: topbar.currentIndex === 1
+                    creator: QmlHelper.xdgSurfaceManager
+                    anchors.fill: parent
+                }
+
+                XdgFullWorkspace {
+                    visible: topbar.currentIndex === 2
                     creator: QmlHelper.xdgSurfaceManager
                     anchors.fill: parent
                 }

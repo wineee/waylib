@@ -38,7 +38,6 @@ inline QPointF getItemGlobalPosition(QQuickItem *item)
 Helper::Helper(QObject *parent)
     : WSeatEventFilter(parent)
 {
-
 }
 
 void Helper::stopMoveResize()
