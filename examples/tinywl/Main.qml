@@ -21,11 +21,14 @@ Item {
 
                 Helper.allowNonDrmOutputAutoChangeMode(output)
                 QmlHelper.outputManager.add({waylandOutput: output})
+                console.log("22222222222222222233333333333333333333333333")
+                outputManager.updateConfig(backend.wbackend())
             }
             onOutputRemoved: function(output) {
                 QmlHelper.outputManager.removeIf(function(prop) {
                     return prop.waylandOutput === output
                 })
+                outputManager.updateConfig(backend.wbackend())
             }
             onInputAdded: function(inputDevice) {
                 seat0.addDevice(inputDevice)
@@ -87,6 +90,10 @@ Item {
                     sendFailedAndDestroy(gamma_control);
                 };
             }
+        }
+
+        OutputManager {
+            id: outputManager
         }
 
         CursorShapeManager { }

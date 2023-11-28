@@ -5,6 +5,7 @@
 
 #include <wglobal.h>
 #include <wquickwaylandserver.h>
+#include <wbackend.h>
 
 #include <qwglobal.h>
 
@@ -34,6 +35,7 @@ public:
     explicit WQuickBackend(QObject *parent = nullptr);
 
     QW_NAMESPACE::QWBackend *backend() const;
+    Q_INVOKABLE WBackend *wbackend() const;
 
 Q_SIGNALS:
     void outputAdded(WOutput *output);
