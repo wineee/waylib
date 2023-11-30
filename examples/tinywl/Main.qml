@@ -186,6 +186,8 @@ Item {
                 OutputDelegate {
                     property real topMargin: topbar.height
                     waylandCursor: cursor1
+                    outputManager: outputManager
+                    x: 100
                 }
             }
         }

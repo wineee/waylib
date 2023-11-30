@@ -14,6 +14,7 @@
 #include <QImage>
 
 struct wlr_output;
+struct wlr_output_mode;
 
 QT_BEGIN_NAMESPACE
 class QScreen;
@@ -29,6 +30,7 @@ QW_END_NAMESPACE
 
 WAYLIB_SERVER_BEGIN_NAMESPACE
 
+struct WOutputStateEvent;
 class QWlrootsScreen;
 class QWlrootsIntegration;
 
@@ -99,6 +101,7 @@ public:
     QList<WCursor*> cursorList() const;
 
     Q_INVOKABLE bool setGammaLut(size_t ramp_size, uint16_t* r, uint16_t* g, uint16_t* b);
+    Q_INVOKABLE void enableAdaptiveSync(bool enabled);
 
     bool forceSoftwareCursor() const;
     void setForceSoftwareCursor(bool on);
@@ -112,6 +115,10 @@ Q_SIGNALS:
     void scaleChanged();
     void forceSoftwareCursorChanged();
     void bufferCommitted();
+    void requestTransform(Transform transform);
+    void requestScale(float scale);
+    void requestAdaptiveSyncEnabled(bool adaptiveSyncEnabled);
+    void requestOutputStateApply(WOutputStateEvent event);
 
 private:
     friend class QWlrootsIntegration;
@@ -122,5 +129,28 @@ private:
     friend class WServerPrivate;
 };
 
+struct WOutputStateEvent
+{
+    Q_GADGET
+    Q_PROPERTY(bool enable MEMBER m_enable)
+    Q_PROPERTY(int32_t x MEMBER m_x)
+    Q_PROPERTY(int32_t y MEMBER m_y)
+    Q_PROPERTY(WOutput::Transform transform MEMBER m_transform)
+    Q_PROPERTY(bool accept MEMBER m_accept)
+
+public:
+    bool m_enable;
+    wlr_output_mode *mode;
+    int32_t m_x, m_y;
+    int32_t custom_mode_width, custom_mode_height;
+    int32_t custom_mode_refresh;
+    WOutput::Transform m_transform;
+    float scale;
+    bool adaptive_sync_enabled;
+
+    bool m_accept = true;
+};
+
 WAYLIB_SERVER_END_NAMESPACE
+Q_DECLARE_METATYPE(WAYLIB_SERVER_NAMESPACE::WOutputStateEvent*)
 Q_DECLARE_METATYPE(WAYLIB_SERVER_NAMESPACE::WOutput*)

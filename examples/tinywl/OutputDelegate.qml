@@ -7,6 +7,7 @@ import Waylib.Server
 
 OutputItem {
     required property WaylandOutput waylandOutput
+    required property OutputManager outputManager
     property OutputViewport onscreenViewport: outputViewport
     property Cursor waylandCursor
 
@@ -91,7 +92,7 @@ OutputItem {
 
     Image {
         id: background
-        source: "file:///usr/share/wallpapers/deepin/desktop.jpg"
+        source: "file:///run/current-system/sw/share/wallpapers/Altai/contents/images/1080x1920.png"
         fillMode: Image.PreserveAspectCrop
         asynchronous: true
         anchors.fill: parent
@@ -261,5 +262,29 @@ OutputItem {
             NumberAnimation { from: 0; to: 360; duration: 5000; easing.type: Easing.InOutCubic }
             loops: Animation.Infinite
         }
+    }
+
+    Connections {
+        target: waylandOutput
+
+        // function onRequestTransform(transform) {
+        //     outputViewport.rotationOutput(transform)
+        // }
+
+        // function onRequestScale(scale) {
+        //     outputViewport.setOutputScale(scale)
+        // }
+
+        // function onRequestAdaptiveSyncEnabled(enabled) {
+        //     waylandOutput.enableAdaptiveSync(enabled);
+        // }
+        function onRequestOutputStateApply(event) {
+           outputViewport.rotationOutput(event.transform)
+           event.accept = true;
+           outputViewport.x = 200;
+           outputViewport.y = 200;
+        }
+
+
     }
 }

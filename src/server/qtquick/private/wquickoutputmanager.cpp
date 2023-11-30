@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0 OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
 
 #include "wquickoutputmanager_p.h"
+#include "wtypes.h"
 #include "woutput.h"
 #include <qwoutputmanagementv1.h>
 #include <qwoutput.h>
@@ -13,7 +14,9 @@ extern "C" {
 }
 
 WAYLIB_SERVER_BEGIN_NAMESPACE
-using QW_NAMESPACE::QWOutputManagerV1, QW_NAMESPACE::QWOutputConfigurationV1;
+
+using QW_NAMESPACE::QWOutputManagerV1;
+using QW_NAMESPACE::QWOutputConfigurationV1;
 using QW_NAMESPACE::QWOutputConfigurationHeadV1;
 
 class WQuickOutputManagerPrivate : public WObjectPrivate
@@ -56,6 +59,32 @@ void WQuickOutputManager::create()
     });
 }
 
+static constexpr WOutput::Transform wlToWOutputTransform(wl_output_transform transform)
+{
+    switch (transform) {
+    using enum WOutput::Transform;
+    case WL_OUTPUT_TRANSFORM_NORMAL:
+        return Normal;
+    case WL_OUTPUT_TRANSFORM_90:
+        return R90;
+    case WL_OUTPUT_TRANSFORM_180:
+        return R180;
+    case WL_OUTPUT_TRANSFORM_270:
+        return R270;
+    case WL_OUTPUT_TRANSFORM_FLIPPED:
+        return Flipped;
+    case WL_OUTPUT_TRANSFORM_FLIPPED_90:
+        return Flipped90;
+    case WL_OUTPUT_TRANSFORM_FLIPPED_180:
+        return Flipped180;
+    case WL_OUTPUT_TRANSFORM_FLIPPED_270:
+        return Flipped270;
+    default:
+        Q_UNREACHABLE();
+        break;
+    }
+}
+
 void WQuickOutputManagerPrivate::outputMgrApplyOrTest(QWOutputConfigurationV1 *config, int test)
 {
     /*
@@ -68,22 +97,31 @@ void WQuickOutputManagerPrivate::outputMgrApplyOrTest(QWOutputConfigurationV1 *c
     int ok = 1;
 
     wl_list_for_each(config_head, &config->handle()->heads, link) {
-        auto *output = QWLRoots::QWOutput::from(config_head->state.output);
+        auto *output = QW_NAMESPACE::QWOutput::from(config_head->state.output);
+        auto *woutput = WOutput::fromHandle(output);
 
-        output->enable(config_head->state.enabled);
-        if (config_head->state.enabled) {
-            if (config_head->state.mode)
-                output->setMode(config_head->state.mode);
-            else
-                output->setCustomMode({ config_head->state.custom_mode.width,
-                                       config_head->state.custom_mode.height },
-                                      config_head->state.custom_mode.refresh);
+        //output->enable(config_head->state.enabled);
 
-            //outputlayout { config_head->state.x, config_head->state.y}
-            output->setTransform(config_head->state.transform);
-            output->setScale(config_head->state.scale);
-            output->enableAdaptiveSync(config_head->state.adaptive_sync_enabled);
-        }
+
+        const auto &state = config_head->state;
+        WOutputStateEvent event;
+        event.m_accept = false;
+        event.m_transform = wlToWOutputTransform(state.transform);
+        qDebug() << event.m_accept;
+        Q_EMIT woutput->requestOutputStateApply(event);
+        qDebug() << "DDDDDDDDDDDDDDDDDDD: " << event.m_accept;
+
+        /*if (config_head->state.enabled) {
+            Q_EMIT woutput->requestTransform(wlToWOutputTransform(config_head->state.transform));
+            Q_EMIT woutput->requestScale(config_head->state.scale);
+            // if (config_head->state.mode)
+            //     output->setMode(config_head->state.mode);
+            // else
+            //     output->setCustomMode({ config_head->state.custom_mode.width,
+            //                            config_head->state.custom_mode.height },
+            //                           config_head->state.custom_mode.refresh);
+            Q_EMIT woutput->requestAdaptiveSyncEnabled(config_head->state.adaptive_sync_enabled);
+        }*/
 
         if (test) {
             ok &= output->test();
