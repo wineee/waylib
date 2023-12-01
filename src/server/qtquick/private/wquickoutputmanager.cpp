@@ -32,7 +32,8 @@ public:
 
     void outputMgrApplyOrTest(QWOutputConfigurationV1 *config, int test);
 
-    QWOutputManagerV1 *manager = nullptr;
+    QWOutputManagerV1 *manager { nullptr };
+    QPointer<WBackend> backend;
 };
 
 WQuickOutputManager::WQuickOutputManager(QObject *parent):
@@ -85,14 +86,9 @@ static constexpr WOutput::Transform wlToWOutputTransform(wl_output_transform tra
     }
 }
 
-void WQuickOutputManagerPrivate::outputMgrApplyOrTest(QWOutputConfigurationV1 *config, int test)
+void WQuickOutputManagerPrivate::outputMgrApplyOrTest(QWOutputConfigurationV1 *config, int onlyTest)
 {
-    /*
-     * Called when a client such as wlr-randr requests a change in output
-     * configuration. This is only one way that the layout can be changed,
-     * so any Monitor information should be updated by updatemons() after an
-     * output_layout.change event, not here.
-     */
+    W_Q(WQuickOutputManager);
     wlr_output_configuration_head_v1 *config_head;
     int ok = 1;
 
@@ -100,30 +96,27 @@ void WQuickOutputManagerPrivate::outputMgrApplyOrTest(QWOutputConfigurationV1 *c
         auto *output = QW_NAMESPACE::QWOutput::from(config_head->state.output);
         auto *woutput = WOutput::fromHandle(output);
 
-        //output->enable(config_head->state.enabled);
-
-
         const auto &state = config_head->state;
-        WOutputStateEvent event;
-        event.m_accept = false;
-        event.m_transform = wlToWOutputTransform(state.transform);
-        qDebug() << event.m_accept;
-        Q_EMIT woutput->requestOutputStateApply(event);
-        qDebug() << "DDDDDDDDDDDDDDDDDDD: " << event.m_accept;
 
-        /*if (config_head->state.enabled) {
-            Q_EMIT woutput->requestTransform(wlToWOutputTransform(config_head->state.transform));
-            Q_EMIT woutput->requestScale(config_head->state.scale);
-            // if (config_head->state.mode)
-            //     output->setMode(config_head->state.mode);
-            // else
-            //     output->setCustomMode({ config_head->state.custom_mode.width,
-            //                            config_head->state.custom_mode.height },
-            //                           config_head->state.custom_mode.refresh);
-            Q_EMIT woutput->requestAdaptiveSyncEnabled(config_head->state.adaptive_sync_enabled);
-        }*/
+        output->enable(config_head->state.enabled);
+        if (config_head->state.enabled) {
+            if (config_head->state.mode)
+                output->setMode(config_head->state.mode);
+            else
+                output->setCustomMode({ config_head->state.custom_mode.width,
+                                       config_head->state.custom_mode.height },
+                                      config_head->state.custom_mode.refresh);
+            output->enableAdaptiveSync(state.adaptive_sync_enabled);
 
-        if (test) {
+            if (!onlyTest) {
+                // assume transform/scale/position setting always success
+                Q_EMIT woutput->requestTransform(wlToWOutputTransform(state.transform));
+                Q_EMIT woutput->requestScale(state.scale);
+                Q_EMIT woutput->requestOutputPosition(state.x, state.y);
+            }
+        }
+
+        if (onlyTest) {
             ok &= output->test();
             output->rollback();
         } else {
@@ -136,19 +129,19 @@ void WQuickOutputManagerPrivate::outputMgrApplyOrTest(QWOutputConfigurationV1 *c
     else
         config->sendFailed();
     delete config;
-    /* TODO: use a wrapper function? */
-    //updatemons(NULL, NULL);
+
+    q->updateConfig();
 }
 
-void WQuickOutputManager::updateConfig(WBackend *backend) {
+void WQuickOutputManager::updateConfig() {
     W_D(WQuickOutputManager);
+    if (!d->backend)
+        return;
 
     auto *config = QWOutputConfigurationV1::create();
     qDebug() << "WQuickOutputManager::updateConfig";
-    for (const WOutput *output : backend->outputList()) {
-//        if (output == root->fallback_output) {
-//            continue;
-//        }
+
+    for (const WOutput *output : d->backend->outputList()) {
         qDebug() << "WOutput" <<  output;
         auto *config_head = QWOutputConfigurationHeadV1::create(config, output->handle());
         //struct wlr_box output_box;
@@ -161,6 +154,21 @@ void WQuickOutputManager::updateConfig(WBackend *backend) {
     }
 
     d->manager->setConfiguration(config);
+}
+
+WBackend *WQuickOutputManager::backend() const
+{
+    W_DC(WQuickOutputManager);
+    return d->backend;
+}
+
+void WQuickOutputManager::setBackend(WBackend *backend)
+{
+    W_D(WQuickOutputManager);
+    if (d->backend == backend)
+        return;
+    d->backend = backend;
+    updateConfig();
 }
 
 WAYLIB_SERVER_END_NAMESPACE

@@ -267,24 +267,17 @@ OutputItem {
     Connections {
         target: waylandOutput
 
-        // function onRequestTransform(transform) {
-        //     outputViewport.rotationOutput(transform)
-        // }
-
-        // function onRequestScale(scale) {
-        //     outputViewport.setOutputScale(scale)
-        // }
-
-        // function onRequestAdaptiveSyncEnabled(enabled) {
-        //     waylandOutput.enableAdaptiveSync(enabled);
-        // }
-        function onRequestOutputStateApply(event) {
-           outputViewport.rotationOutput(event.transform)
-           event.accept = true;
-           outputViewport.x = 200;
-           outputViewport.y = 200;
+        function onRequestTransform(transform) {
+            outputViewport.rotationOutput(transform)
         }
 
+        function onRequestScale(scale) {
+            outputViewport.setOutputScale(scale)
+        }
 
+        function onRequestOutputPosition(x, y) {
+            outputViewport.x = x;
+            outputViewport.y = y;
+        }
     }
 }

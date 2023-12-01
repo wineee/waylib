@@ -16,11 +16,15 @@ class WAYLIB_SERVER_EXPORT WQuickOutputManager: public WQuickWaylandServerInterf
 {
     Q_OBJECT
     W_DECLARE_PRIVATE(WQuickOutputManager)
+    Q_PROPERTY(WBackend *waylandBackend READ backend WRITE setBackend)
     QML_NAMED_ELEMENT(OutputManager)
 public:
     explicit WQuickOutputManager(QObject *parent = nullptr);
 
-    Q_INVOKABLE void updateConfig(WBackend *backend);
+    Q_INVOKABLE void updateConfig();
+
+    WBackend *backend() const;
+    void setBackend(WBackend *backend);
 
 private:
     void create() override;

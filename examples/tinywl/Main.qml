@@ -22,13 +22,13 @@ Item {
                 Helper.allowNonDrmOutputAutoChangeMode(output)
                 QmlHelper.outputManager.add({waylandOutput: output})
                 console.log("22222222222222222233333333333333333333333333")
-                outputManager.updateConfig(backend.wbackend())
+                outputManagerV1.updateConfig()
             }
             onOutputRemoved: function(output) {
                 QmlHelper.outputManager.removeIf(function(prop) {
                     return prop.waylandOutput === output
                 })
-                outputManager.updateConfig(backend.wbackend())
+                outputManagerV1.updateConfig()
             }
             onInputAdded: function(inputDevice) {
                 seat0.addDevice(inputDevice)
@@ -93,7 +93,11 @@ Item {
         }
 
         OutputManager {
-            id: outputManager
+            id: outputManagerV1
+
+            Component.onCompleted: {
+                waylandBackend = backend.wbackend()
+            }
         }
 
         CursorShapeManager { }
@@ -186,8 +190,7 @@ Item {
                 OutputDelegate {
                     property real topMargin: topbar.height
                     waylandCursor: cursor1
-                    outputManager: outputManager
-                    x: 100
+                    outputManager: outputManagerV1
                 }
             }
         }

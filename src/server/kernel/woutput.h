@@ -117,8 +117,9 @@ Q_SIGNALS:
     void bufferCommitted();
     void requestTransform(Transform transform);
     void requestScale(float scale);
-    void requestAdaptiveSyncEnabled(bool adaptiveSyncEnabled);
-    void requestOutputStateApply(WOutputStateEvent event);
+    void requestOutputPosition(int32_t x, int32_t y);
+    //void requestAdaptiveSyncEnabled(bool adaptiveSyncEnabled);
+    //void requestOutputStateApply(WOutputStateEvent event);
 
 private:
     friend class QWlrootsIntegration;
