@@ -130,7 +130,9 @@ void WQuickOutputManagerPrivate::outputMgrApplyOrTest(QWOutputConfigurationV1 *c
         config->sendFailed();
     delete config;
 
-    q->updateConfig();
+    if (!onlyTest) {
+        q->updateConfig();
+    }
 }
 
 void WQuickOutputManager::updateConfig() {
@@ -142,9 +144,12 @@ void WQuickOutputManager::updateConfig() {
     qDebug() << "WQuickOutputManager::updateConfig";
 
     for (const WOutput *output : d->backend->outputList()) {
-        auto *config_head = QWOutputConfigurationHeadV1::create(config, output->handle());
-        config_head->handle()->state.x = output->x();
-        config_head->handle()->state.y = output->y();
+        auto *configHead = QWOutputConfigurationHeadV1::create(config, output->handle());
+        //configHead->handle()->state.scale = output->scale();
+        //configHead->handle()->state.transform = output->orientation()
+        qDebug() << "232erwe:" << output->orientation();
+        configHead->handle()->state.x = output->x();
+        configHead->handle()->state.y = output->y();
     }
 
     d->manager->setConfiguration(config);

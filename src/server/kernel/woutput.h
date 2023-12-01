@@ -103,7 +103,6 @@ public:
     QList<WCursor*> cursorList() const;
 
     Q_INVOKABLE bool setGammaLut(size_t ramp_size, uint16_t* r, uint16_t* g, uint16_t* b);
-    Q_INVOKABLE void enableAdaptiveSync(bool enabled);
 
     bool forceSoftwareCursor() const;
     void setForceSoftwareCursor(bool on);

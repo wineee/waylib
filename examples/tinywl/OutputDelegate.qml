@@ -62,7 +62,11 @@ OutputItem {
             id: setTransform
 
             property var scheduleTransform
-            onTriggered: onscreenViewport.rotateOutput(scheduleTransform)
+            onTriggered: {
+                onscreenViewport.rotateOutput(scheduleTransform)
+                console.log("onTriggered", scheduleTransform)
+                outputManager.updateConfig()
+            }
             interval: rotationAnimator.duration / 2
         }
 
