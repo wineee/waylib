@@ -603,4 +603,30 @@ void WOutput::setForceSoftwareCursor(bool on)
     Q_EMIT forceSoftwareCursorChanged();
 }
 
+int WOutput::x() const
+{
+    return m_x;
+}
+
+int WOutput::y() const
+{
+    return m_y;
+}
+
+void WOutput::setX(int x)
+{
+    if (m_x == x)
+        return;
+    m_x = x;
+    Q_EMIT xChanged();
+}
+
+void WOutput::setY(int y)
+{
+    if (m_y = y)
+        return;
+    m_y = y;
+    Q_EMIT yChanged();
+}
+
 WAYLIB_SERVER_END_NAMESPACE

@@ -142,15 +142,9 @@ void WQuickOutputManager::updateConfig() {
     qDebug() << "WQuickOutputManager::updateConfig";
 
     for (const WOutput *output : d->backend->outputList()) {
-        qDebug() << "WOutput" <<  output;
         auto *config_head = QWOutputConfigurationHeadV1::create(config, output->handle());
-        //struct wlr_box output_box;
-        //wlr_output_layout_get_box(root->output_layout,
-        //                          output->wlr_output, &output_box);
-        // We mark the output enabled when it's switched off but not disabled
-        config_head->handle()->state.enabled = true; //!wlr_box_empty(&output_box);
-        config_head->handle()->state.x = 0;
-        config_head->handle()->state.y = 0;
+        config_head->handle()->state.x = output->x();
+        config_head->handle()->state.y = output->y();
     }
 
     d->manager->setConfiguration(config);

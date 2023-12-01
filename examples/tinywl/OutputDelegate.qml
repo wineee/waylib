@@ -278,6 +278,8 @@ OutputItem {
         function onRequestOutputPosition(x, y) {
             outputViewport.x = x;
             outputViewport.y = y;
+            waylandOutput.x = x
+            waylandOutput.y = y;
         }
     }
 }

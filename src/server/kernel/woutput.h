@@ -30,7 +30,6 @@ QW_END_NAMESPACE
 
 WAYLIB_SERVER_BEGIN_NAMESPACE
 
-struct WOutputStateEvent;
 class QWlrootsScreen;
 class QWlrootsIntegration;
 
@@ -47,6 +46,9 @@ class WAYLIB_SERVER_EXPORT WOutput : public QObject, public WObject
     Q_PROPERTY(Transform orientation READ orientation NOTIFY orientationChanged)
     Q_PROPERTY(float scale READ scale NOTIFY scaleChanged)
     Q_PROPERTY(bool forceSoftwareCursor READ forceSoftwareCursor WRITE setForceSoftwareCursor NOTIFY forceSoftwareCursorChanged)
+    Q_PROPERTY(int x READ x WRITE setX NOTIFY xChanged)
+    Q_PROPERTY(int y READ y WRITE setY NOTIFY yChanged)
+
     QML_NAMED_ELEMENT(WaylandOutput)
     QML_UNCREATABLE("Can't create in qml")
 
@@ -106,6 +108,12 @@ public:
     bool forceSoftwareCursor() const;
     void setForceSoftwareCursor(bool on);
 
+    int x() const;
+    int y() const;
+
+    void setX(int x);
+    void setY(int y);
+
 Q_SIGNALS:
     void positionChanged(const QPoint &pos);
     void modeChanged();
@@ -115,11 +123,11 @@ Q_SIGNALS:
     void scaleChanged();
     void forceSoftwareCursorChanged();
     void bufferCommitted();
+    void xChanged();
+    void yChanged();
     void requestTransform(Transform transform);
     void requestScale(float scale);
     void requestOutputPosition(int32_t x, int32_t y);
-    //void requestAdaptiveSyncEnabled(bool adaptiveSyncEnabled);
-    //void requestOutputStateApply(WOutputStateEvent event);
 
 private:
     friend class QWlrootsIntegration;
@@ -128,30 +136,10 @@ private:
 
     friend class WServer;
     friend class WServerPrivate;
-};
 
-struct WOutputStateEvent
-{
-    Q_GADGET
-    Q_PROPERTY(bool enable MEMBER m_enable)
-    Q_PROPERTY(int32_t x MEMBER m_x)
-    Q_PROPERTY(int32_t y MEMBER m_y)
-    Q_PROPERTY(WOutput::Transform transform MEMBER m_transform)
-    Q_PROPERTY(bool accept MEMBER m_accept)
-
-public:
-    bool m_enable;
-    wlr_output_mode *mode;
-    int32_t m_x, m_y;
-    int32_t custom_mode_width, custom_mode_height;
-    int32_t custom_mode_refresh;
-    WOutput::Transform m_transform;
-    float scale;
-    bool adaptive_sync_enabled;
-
-    bool m_accept = true;
+    int m_x { 0 };
+    int m_y { 0 };
 };
 
 WAYLIB_SERVER_END_NAMESPACE
-Q_DECLARE_METATYPE(WAYLIB_SERVER_NAMESPACE::WOutputStateEvent*)
 Q_DECLARE_METATYPE(WAYLIB_SERVER_NAMESPACE::WOutput*)
