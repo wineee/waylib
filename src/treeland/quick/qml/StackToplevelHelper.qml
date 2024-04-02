@@ -146,7 +146,11 @@ Item {
         }
 
         function onRequestFullscreen(fullscreen) {
-            // TODO: add full screen action
+            if (fullscreen) {
+                connOfSurface.onRequestFullscreen();
+            } else {
+                connOfSurface.onRequestCancelFullscreen();
+            }
         }
 
         function onRequestClose() {
