@@ -50,6 +50,7 @@ Item {
                 item: xwayland,
                 type: "xwayland"
             }
+
         }
 
         return null
@@ -69,7 +70,7 @@ Item {
     property int direction: 0
 
     property int checkExited: 0
-    property var isEntered: false
+    property bool isEntered: false
 
     function show(surfaces, target, pos, direction) {
         filterModel.desiredSurfaces = surfaces
@@ -199,6 +200,7 @@ Item {
             delegate: Item {
                 required property Item item
                 property Item surfaceItem: item
+
                 width: 180
                 height: 180
                 clip: true
@@ -217,6 +219,7 @@ Item {
                         acceptedDevices: PointerDevice.AllDevices
                         cursorShape: Qt.PointingHandCursor
                         onHoveredChanged: {
+                            console.log("onHoveredChanged", surfaceItem)
                             if (hovered) {
                                 root.isEntered = true;
                                 closeBtn.visible = true

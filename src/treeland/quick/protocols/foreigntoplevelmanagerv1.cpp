@@ -105,14 +105,14 @@ public:
                          [=] { handle->setMaximized(surface->isMaximized()); }));
 
         connection.push_back(QObject::connect(
-            surface, &WXdgSurface::fullscreenChanged, q_func(),
+            surface, &WToplevelSurface::fullscreenChanged, q_func(),
             [=] { handle->setFullScreen(surface->isFullScreen()); }));
 
-        connection.push_back(QObject::connect(surface, &WXdgSurface::activateChanged, q_func(),
+        connection.push_back(QObject::connect(surface, &WToplevelSurface::activateChanged, q_func(),
                          [=] { handle->setActivated(surface->isActivated()); }));
 
         connection.push_back(QObject::connect(
-            surface, &WXdgSurface::parentSurfaceChanged, q_func(),
+            surface, &WToplevelSurface::parentSurfaceChanged, q_func(),
             [this, surface, handle] {
                 auto find = std::find_if(
                     surfaces.begin(), surfaces.end(),

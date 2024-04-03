@@ -9,6 +9,7 @@ Item {
     visible: false
 
     function start(target) {
+        console.log("start!!!!!!!!!", target)
         width = target.width
         height = target.height
         x = target.x
