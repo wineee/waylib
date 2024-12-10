@@ -88,8 +88,9 @@ bool WXdgPopupSurface::hasCapability(Capability cap) const
     switch (cap) {
         using enum Capability;
     case Resize:
-    case Focus:
         return true;
+    case Focus:
+    // The keyboard focus of the popup should received by its parent(xdgtoplevel or layersurface)
     case Activate:
     case Maximized:
     case FullScreen:
